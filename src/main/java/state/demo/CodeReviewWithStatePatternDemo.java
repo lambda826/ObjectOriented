@@ -1,156 +1,199 @@
 package state.demo;
 
 /**
+ * https://www.notion.so/yunxianghe/State-6814f6151df54ead9c2817c555abbe1a?pvs=4
+ *
  * @Author Yunxiang He
  */
 public class CodeReviewWithStatePatternDemo {
 
-    private final State nullState;
-    private final State draftState;
-    private final State reviewState;
-    private final State commentedState;
-    private final State approvedState;
-    private final State closedState; // New added state
-    private State currentState;
-
-    public CodeReviewWithStatePatternDemo(State currentState) {
-        nullState = new NullState(this);
-        draftState = new DraftState(this);
-        reviewState = new ReviewState(this);
-        commentedState = new CommentedState(this);
-        approvedState = new ApprovedState(this);
-        closedState = new ApprovedState(this);
-        this.currentState = currentState;
+    public static void main(String[] args) {
+        CodeReview cr = new CodeReview();
+        cr.createNewReview();
+        cr.sendOutForReview();
+        cr.commentOnTheReview();
+        cr.createNewRevision();
+        cr.sendOutForReview();
+        cr.approveTheReview();
+        cr.closeTheReview();
     }
 
-    abstract class State {
-        protected final CodeReviewWithStatePatternDemo context;
+    public static class CodeReview {
 
-        public State(CodeReviewWithStatePatternDemo context) {
-            this.context = context;
+        private final State nullState;
+        private final State draftState;
+        private final State reviewState;
+        private final State commentedState;
+        private final State approvedState;
+        private final State closedState; // New added state
+        private State currentState;
+
+        public CodeReview() {
+            nullState = new NullState(this);
+            draftState = new DraftState(this);
+            reviewState = new ReviewState(this);
+            commentedState = new CommentedState(this);
+            approvedState = new ApprovedState(this);
+            closedState = new ClosedState(this);
+            this.currentState = nullState;
         }
 
-        protected void createNewReview() {
-            System.out.println("Illegal operation");
-        }
-
-        protected void createNewRevision() {
-            System.out.println("Illegal operation");
-        }
-
-        protected void sendOutForReview() {
-            System.out.println("Illegal operation");
-        }
-
-        protected void commentOnTheReview() {
-            System.out.println("Illegal operation");
-        }
-
-        protected void approveTheReview() {
-            System.out.println("Illegal operation");
-        }
-
-        protected void closeTheReview() {
-            System.out.println("Illegal operation");
-        }
-    }
-
-    public class NullState extends State {
-
-        public NullState(CodeReviewWithStatePatternDemo context) {
-            super(context);
-        }
-
-        @Override
         public void createNewReview() {
-            System.out.println("Creating new review");
-            context.currentState = this.context.draftState;
-        }
-    }
-
-    public class DraftState extends State {
-
-        public DraftState(CodeReviewWithStatePatternDemo context) {
-            super(context);
+            currentState.createNewReview();
         }
 
-        @Override
-        public void sendOutForReview() {
-            System.out.println("Sending out for the review");
-        }
-
-        @Override
-        public void closeTheReview() {
-            System.out.println("Closing the review");
-        }
-    }
-
-    public class ReviewState extends State {
-
-        public ReviewState(CodeReviewWithStatePatternDemo context) {
-            super(context);
-        }
-
-        @Override
-        public void commentOnTheReview() {
-            System.out.println("Commenting the review");
-            currentState = commentedState;
-        }
-
-        @Override
-        public void approveTheReview() {
-            System.out.println("Approving the review");
-            currentState = approvedState;
-        }
-
-        @Override
-        public void closeTheReview() {
-            System.out.println("Closing the review");
-            currentState = closedState;
-        }
-    }
-
-    public class CommentedState extends State {
-
-        public CommentedState(CodeReviewWithStatePatternDemo context) {
-            super(context);
-        }
-
-
-        @Override
         public void createNewRevision() {
-            System.out.println("Creating new revision");
-            currentState = draftState;
+            currentState.createNewRevision();
         }
 
-        @Override
+        public void sendOutForReview() {
+            currentState.sendOutForReview();
+        }
+
+        public void commentOnTheReview() {
+            currentState.commentOnTheReview();
+        }
+
+        public void approveTheReview() {
+            currentState.approveTheReview();
+        }
+
         public void closeTheReview() {
-            System.out.println("Closing the review");
-            currentState = closedState;
+            currentState.closeTheReview();
+        }
+
+        abstract class State {
+            protected final CodeReview context;
+
+            public State(CodeReview context) {
+                this.context = context;
+            }
+
+            protected void createNewReview() {
+                System.out.println("Illegal operation");
+            }
+
+            protected void createNewRevision() {
+                System.out.println("Illegal operation");
+            }
+
+            protected void sendOutForReview() {
+                System.out.println("Illegal operation");
+            }
+
+            protected void commentOnTheReview() {
+                System.out.println("Illegal operation");
+            }
+
+            protected void approveTheReview() {
+                System.out.println("Illegal operation");
+            }
+
+            protected void closeTheReview() {
+                System.out.println("Illegal operation");
+            }
+        }
+
+        public class NullState extends State {
+
+            public NullState(CodeReview context) {
+                super(context);
+            }
+
+            @Override
+            public void createNewReview() {
+                System.out.println("Creating new review");
+                currentState = draftState;
+            }
+        }
+
+        public class DraftState extends State {
+
+            public DraftState(CodeReview context) {
+                super(context);
+            }
+
+            @Override
+            public void sendOutForReview() {
+                System.out.println("Sending out for the review");
+                currentState = reviewState;
+            }
+
+            @Override
+            public void closeTheReview() {
+                System.out.println("Closing the review");
+                currentState = closedState;
+            }
+        }
+
+        public class ReviewState extends State {
+
+            public ReviewState(CodeReview context) {
+                super(context);
+            }
+
+            @Override
+            public void commentOnTheReview() {
+                System.out.println("Commenting the review");
+                currentState = commentedState;
+            }
+
+            @Override
+            public void approveTheReview() {
+                System.out.println("Approving the review");
+                currentState = approvedState;
+            }
+
+            @Override
+            public void closeTheReview() {
+                System.out.println("Closing the review");
+                currentState = closedState;
+            }
+        }
+
+        public class CommentedState extends State {
+
+            public CommentedState(CodeReview context) {
+                super(context);
+            }
+
+
+            @Override
+            public void createNewRevision() {
+                System.out.println("Creating new revision");
+                currentState = draftState;
+            }
+
+            @Override
+            public void closeTheReview() {
+                System.out.println("Closing the review");
+                currentState = closedState;
+            }
+        }
+
+        public class ApprovedState extends State {
+
+            public ApprovedState(CodeReview context) {
+                super(context);
+            }
+
+            @Override
+            public void closeTheReview() {
+                System.out.println("Closing the review");
+                currentState = closedState;
+            }
+        }
+
+        /**
+         * New added state
+         */
+        public class ClosedState extends State {
+
+            public ClosedState(CodeReview context) {
+                super(context);
+            }
+
         }
     }
 
-    public class ApprovedState extends State {
-
-        public ApprovedState(CodeReviewWithStatePatternDemo context) {
-            super(context);
-        }
-
-        @Override
-        public void closeTheReview() {
-            System.out.println("Closing the review");
-            currentState = closedState;
-        }
-    }
-
-    /**
-     * New added state
-     */
-    public class ClosedState extends State {
-
-        public ClosedState(CodeReviewWithStatePatternDemo context) {
-            super(context);
-        }
-    }
 }
-
