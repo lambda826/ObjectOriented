@@ -58,7 +58,7 @@ public class CodeReviewWithoutStatePatternDemo {
             switch (currentState) {
                 case REVIEW:
                 case COMMENTED:
-                    System.out.println("Creating new review");
+                    System.out.println("Creating new revision");
                     currentState = State.DRAFT;
                     break;
                 case NULL:
